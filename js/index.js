@@ -15,7 +15,6 @@ function createStaff() {
   let title = getElement("#chucvu").value;
   let timeWork = +getElement("#gioLam").value;
   let rank = "";
-
   let isValid = validate();
   if (!isValid) {
     return;
@@ -163,17 +162,18 @@ function updateStaff() {
 
 function validate() {
   let isValid = true;
-
   //kiểm tra tài khoản
   let account = getElement("#tknv").value;
   if (!account.trim()) {
     isValid = false;
-    getElement("#tbTKNV").innerHTML = "account sinh viên không được để trống";
-
-    getElement("#tbTKNV").innerHTML = "";
+    getElement("#tbTKNV").innerHTML = "account không được để trống";
+    getElement("#tbTKNV").style.display = "inline";
   } else if (!/^\d+$/.test(account)) {
     isValid = false;
     getElement("#tbTKNV").innerHTML = "account không hợp lệ";
+    getElement("#tbTKNV").style.display = "inline";
+  } else {
+    getElement("#tbTKNV").innerHTML = "";
   }
 
   // kiểm tra tên staff
@@ -181,9 +181,11 @@ function validate() {
   if (!name.trim()) {
     isValid = false;
     getElement("#tbTen").innerHTML = "Tên không được để trống";
-  } else if (!/^[a-zA-Z]+$/.test(name)) {
+    getElement("#tbTen").style.display = "inline";
+  } else if (!/[a-z]|[A-Z]|\s/g.test(name)) {
     isValid = false;
     getElement("#tbTen").innerHTML = "tên không hợp lệ";
+    getElement("#tbTen").style.display = "inline";
   } else {
     getElement("#tbTen").innerHTML = "";
   }
@@ -192,10 +194,12 @@ function validate() {
   let email = getElement("#email").value;
   if (!email.trim()) {
     isValid = false;
-    getElement("#tbEmail").innerHTML = "Email sinh viên không được để trống";
+    getElement("#tbEmail").innerHTML = "Email không được để trống";
+    getElement("#tbEmail").style.display = "inline";
   } else if (!/^[\w.]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(email)) {
     isValid = false;
     getElement("#tbEmail").innerHTML = "Email không hợp lệ";
+    getElement("#tbEmail").style.display = "inline";
   } else {
     getElement("#tbEmail").innerHTML = "";
   }
@@ -205,46 +209,62 @@ function validate() {
   if (!password.trim()) {
     isValid = false;
     getElement("#tbMatKhau").innerHTML = "Pass không được để trống";
+    getElement("#tbMatKhau").style.display = "inline";
   } else if (
     !/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{6,10})/.test(password)
   ) {
     isValid = false;
     getElement("#tbMatKhau").innerHTML = "Pass không hợp lệ";
+    getElement("#tbMatKhau").style.display = "inline";
   } else {
     getElement("#tbMatKhau").innerHTML = "";
   }
 
   // Kiểm tra lương
-  if (salary < 1000000 || salary > 20000000) {
+  let basicSalary = +getElement("#luongCB").value;
+  if (basicSalary < 1000000 || basicSalary > 20000000) {
     getElement("#tbLuongCB").innerHTML = "Lương cơ bản không hợp lệ";
+    getElement("#tbLuongCB").style.display = "inline";
     isValid = false;
+  } else {
+    getElement("#tbLuongCB").innerHTML = "";
   }
+
   // Kiểm tra chức vụ
+  let title = getElement("#chucvu").value;
   if (title == "Chọn chức vụ") {
     getElement("#tbChucVu").innerHTML = "không được bỏ trống chức vụ";
+    getElement("#tbChucVu").style.display = "inline";
+
     isValid = false;
+  } else {
+    getElement("#tbChucVu").innerHTML = "";
   }
 
   // Kiểm tra giờ làm
+  let timeWork = +getElement("#gioLam").value;
   if (timeWork < 80 || timeWork > 200) {
     getElement("#tbGiolam").innerHTML = "Giờ làm không hợp lệ ( 80h-200h) ";
+    getElement("#tbGiolam").style.display = "inline";
+
     isValid = false;
+  } else {
+    getElement("#tbGiolam").innerHTML = "";
   }
+
   return isValid;
 }
 
-// //hàm tìm kiếm nhân viên theo xếp loại
-// function searchStaff() {
-//   //B1: Dom
-//   let search = getElement("#searchName").value;
+//hàm tìm kiếm nhân viên theo xếp loại
+function searchStaff() {
+  //B1: Dom
+  let search = getElement("#searchName").value;
 
-//   //B2: lọc những user có thành tích khớp với giá trị search
-//   let newStaffList = staffList.filter(() => {
-//     let rank = staff.rank.toLowerCase();
-//     search = search.toLowerCase();
-//     return rank.indexOf(search) !== -1;
-//   });
+  //B2: lọc những user có thành tích khớp với giá trị search
+  let newStaffList = staffList.filter((staff) => {
+    return staff.rank().indexOf(search) !== -1;
+  });
 
-//   // B3: Gọi hàm renderTable để hiển thị ra giao diện
-//   renderTable(newStaffList);
-// }
+  // B3: Gọi hàm renderTable để hiển thị ra giao diện
+  renderTable(newStaffList);
+}
